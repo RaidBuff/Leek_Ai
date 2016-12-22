@@ -1,0 +1,69 @@
+global enemy;
+
+if(getWeapon()==null)
+	setWeapon(WEAPON_SHOTGUN); // Attention : coûte 1 PT
+
+if(enemy==null || getLife(enemy)==0)
+	enemy = getNearestEnemy();
+	
+var me = getLeek();
+var meCell = getCell(me);
+var enemyCell = getCell(enemy);
+if(!canUseWeapon(enemy))
+	moveToward(enemy);
+useChip(CHIP_HELMET, me);
+useChip(CHIP_SHIELD,me);
+if(getLife() < getTotalLife()){
+	if(getTurn()%2 == 0){
+		useChip(CHIP_BANDAGE, me);
+	} else {
+		useChip(CHIP_CURE,me);
+	}
+}
+var cellCible = getCellToUseWeapon(WEAPON_SHOTGUN, enemy);
+var test = moveTowardCell(cellCible);
+debug ("mp pour cellule pour shot gun : "+test);
+debug("modulo du tour par 2 : "+getTurn()%2);
+moveTowardCell(cellCible);
+if(canUseWeapon(enemy))
+	moveToward(enemy);
+	
+var cellDistance = getCellDistance(meCell, enemyCell);
+debug("cellDistance : "+cellDistance);
+
+for(var i = 0; i <= getTP(); i++){
+	if(getCellDistance(meCell, enemyCell) > 6){
+		useChip(CHIP_SPARK, enemy);
+	}else if(canUseWeapon(enemy) && getCellDistance(meCell, enemyCell) <=6){
+		if(getWeapon()!=WEAPON_SHOTGUN)
+			setWeapon(WEAPON_SHOTGUN);
+		useWeapon(enemy);
+	}else{
+		if(getWeapon()!=WEAPON_DOUBLE_GUN)
+			setWeapon(WEAPON_DOUBLE_GUN);
+		useWeapon(enemy);
+	}
+}
+if(canUseChip(CHIP_SPARK, enemy))
+	useChip(CHIP_SPARK, enemy);
+if(canUseChip(CHIP_PEBBLE, enemy))
+	useChip(CHIP_PEBBLE, enemy);
+	
+
+
+
+
+/*
+while(getTP()>0){
+	if(getTP()>getWeaponCost(WEAPON_SHOTGUN) && canUseWeapon(WEAPON_SHOTGUN, enemy) && cellDistance<6){
+		if(getWeapon()!=WEAPON_SHOTGUN)
+			setWeapon(WEAPON_SHOTGUN);
+		useWeapon(enemy);
+	}else if(getTP()>getChipCost(CHIP_SPARK)){
+		if(canUseChip(CHIP_SPARK, enemy))
+			useChip(CHIP_SPARK, enemy);
+	}else{
+		break;
+	}
+}
+*/

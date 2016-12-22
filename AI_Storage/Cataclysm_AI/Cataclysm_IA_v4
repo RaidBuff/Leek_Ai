@@ -1,0 +1,57 @@
+global enemy;
+if (getWeapon() == null) setWeapon(WEAPON_MAGNUM); // Attention : coûte 1 PT
+if (enemy == null || isDead(enemy)) enemy = getNearestEnemy();
+global previousPos;
+var me = getLeek();
+var meCell = getCell(me);
+var enemyCell = getCell(enemy);
+var cellDistance = getCellDistance(meCell, enemyCell);
+if (!canUseWeapon(enemy) && getCellDistance(meCell, enemyCell) <=13) {
+	var cellCible = getCellToUseWeapon(WEAPON_BROADSWORD, enemy);
+	moveTowardCell(cellCible);
+}else if(cellDistance>=17){
+	moveToward(enemy);
+}
+
+meCell = getCell(me);
+enemyCell = getCell(enemy);
+cellDistance = getCellDistance(meCell, enemyCell);
+debug("cellDistance : "+cellDistance);
+global firstUse = 0;
+if (cellDistance<14) {
+	if(firstUse ==0) firstUse=getTurn();
+	useChip(CHIP_SHIELD, me);
+	useChip(CHIP_WALL, me);
+	useChip(CHIP_HELMET, me);
+	if ((getTurn()-firstUse)% 4 == 3) 
+	if (getLife() < 0.75*getTotalLife()) {
+		useChip(CHIP_CURE, me);
+	}
+}
+
+var tp = getTP();
+	
+for (var i = 0; i < tp; 1) {
+	if (canUseWeapon(WEAPON_BROADSWORD, enemy)) {
+		if (getWeapon() != WEAPON_BROADSWORD) setWeapon(WEAPON_BROADSWORD);
+		useWeapon(enemy);
+		i += 5;
+	} else if (canUseWeapon(WEAPON_MAGNUM, enemy)) {
+		if (getWeapon() != WEAPON_MAGNUM) setWeapon(WEAPON_MAGNUM);
+		useWeapon(enemy);
+		i += 5;
+	} else if (canUseChip(CHIP_SPARK, enemy)) {
+		useChip(CHIP_SPARK, enemy);
+		i += 3;
+	} else {
+		break;
+	}
+}
+
+if (canUseChip(CHIP_SPARK, enemy)) useChip(CHIP_SPARK, enemy);
+if (canUseChip(CHIP_SPARK, enemy)) useChip(CHIP_SPARK, enemy);
+if (canUseChip(CHIP_PEBBLE, enemy)) useChip(CHIP_PEBBLE, enemy);
+if (enemy == null || isDead(enemy)) enemy = getNearestEnemy();
+if (getCellDistance(meCell, enemyCell) <=13) moveAwayFrom(enemy);
+previousPos = enemyCell;
+debug("TP fin de tour : " + getTP() + " et MP fin de tour : " + getMP());

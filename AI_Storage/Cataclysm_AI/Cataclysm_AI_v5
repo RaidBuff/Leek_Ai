@@ -1,0 +1,66 @@
+global enemy;
+
+if (enemy == null || isDead(enemy)) enemy = getNearestEnemy();
+global previousPos;
+global firstUse = 0;
+var autorizedChallenger = ["", "Kroc", "Twingo", "MasterRace", "Cataclysm", "juteux", "KumaKami", "AAAHHH"];
+var enemyName = getName(enemy);
+if(!inArray(autorizedChallenger, enemyName) && getFightContext()== FIGHT_CONTEXT_CHALLENGE){
+	while(getTP()>0)
+		say("nop") ; 
+}else{
+if (getWeapon() == null) setWeapon(WEAPON_LASER); // Attention : coûte 1 PT
+
+var me = getLeek();
+var meCell = getCell(me);
+var enemyCell = getCell(enemy);
+var cellDistance = getCellDistance(meCell, enemyCell);
+if (!canUseWeapon(enemy) && cellDistance <=13 && cellDistance >3) {
+	var cellCible = getCellToUseWeapon(WEAPON_LASER, enemy);
+	moveTowardCell(cellCible);
+}else if(cellDistance>=17 || cellDistance<=3){
+	moveToward(enemy);
+}
+
+meCell = getCell(me);
+enemyCell = getCell(enemy);
+cellDistance = getCellDistance(meCell, enemyCell);
+debug("cellDistance : "+cellDistance);
+if (cellDistance<14) {
+	if(firstUse ==0) firstUse=getTurn();
+	useChip(CHIP_SHIELD, me);
+	useChip(CHIP_PROTEIN, me);
+	useChip(CHIP_HELMET, me);
+	if ((getTurn()-firstUse)% 4 == 3) 
+	if (getLife() < 0.75*getTotalLife()) {
+		useChip(CHIP_CURE, me);
+	}
+}
+
+var tp = getTP();
+	
+for (var i = 0; i < tp; 1) {
+	if (canUseWeapon(WEAPON_BROADSWORD, enemy)) {
+		if (getWeapon() != WEAPON_BROADSWORD) setWeapon(WEAPON_BROADSWORD);
+		useWeapon(enemy);
+		i += 5;
+	} else if (canUseWeapon(WEAPON_LASER, enemy)) {
+		if (getWeapon() != WEAPON_LASER) setWeapon(WEAPON_LASER);
+		useWeapon(enemy);
+		i += 5;
+	} else if (canUseChip(CHIP_SPARK, enemy)) {
+		useChip(CHIP_SPARK, enemy);
+		i += 3;
+	} else {
+		break;
+	}
+}
+
+if (canUseChip(CHIP_SPARK, enemy)) useChip(CHIP_SPARK, enemy);
+if (canUseChip(CHIP_SPARK, enemy)) useChip(CHIP_SPARK, enemy);
+if (canUseChip(CHIP_PEBBLE, enemy)) useChip(CHIP_PEBBLE, enemy);
+if (enemy == null || isDead(enemy)) enemy = getNearestEnemy();
+if (getCellDistance(meCell, enemyCell) <=13 && !canUseWeapon(WEAPON_BROADSWORD, enemy)) moveAwayFrom(enemy);
+previousPos = enemyCell;
+debug("TP fin de tour : " + getTP() + " et MP fin de tour : " + getMP());
+}
