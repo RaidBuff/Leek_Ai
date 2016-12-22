@@ -1,0 +1,84 @@
+/**
+ * new version of canUseChipOnCell(chip, cell)
+ * that work whit a specific start cell
+ *
+ * @param cellShoot <i>Cell</i> cell shooter
+ * @param cellTarget <i>Cell</i> cell target
+ * @param chip <i>Chip</i> chip use for attack 
+ * @return <i>boolean</i> return yes if cell can be it
+ */
+function canUseChipFrom(cellShoot, cellTarget, chip)
+{	
+	// variable
+	var distanceBetweenTarget = getCellDistance(cellShoot, cellTarget);
+
+	var minDistance = getChipMinRange(chip);
+	var maxDistance = getChipMaxRange(chip);
+	var passTroughObstacle = !chipNeedLos(chip);
+	var isInLine = isInlineChip(chip);
+	
+	if(distanceBetweenTarget < minDistance)
+	{
+		return false; // to close
+	}
+		
+	if(distanceBetweenTarget > maxDistance)
+	{
+		return false; // to far
+	}
+	
+	if(isInLine && !isOnSameLine(cellTarget, cellShoot))
+	{
+		return false; // not on same line
+	}
+	
+	if(!passTroughObstacle && !lineOfSight(cellTarget, cellShoot))
+	{
+		return false; // not on sight
+	}
+	
+	return true;
+}
+
+/**
+ * new version of canUseWeaponOnCell(weapon, cell)
+ * that work whit a specific start cell
+ *
+ * @param cellShoot <i>Cell</i> cell shooter
+ * @param cellTarget <i>Cell</i> cell target
+ * @param chip <i>Weapon</i> weapon use for attack 
+ * @return <i>boolean</i> return yes if cell can be it
+ */
+function canUseWeaponFrom(cellShoot, cellTarget, weapon)
+{
+	// variable
+	var distanceBetweenTarget = getCellDistance(cellShoot, cellTarget);
+	var minDistance = getWeaponMinRange(weapon);
+	var maxDistance = getWeaponMaxRange(weapon);
+	var passTroughObstacle = !weaponNeedLos(weapon);
+	var isInLine = isInlineWeapon(weapon);
+	
+	if(distanceBetweenTarget < minDistance)
+	{
+		return false; // to close
+	}
+		
+	if(distanceBetweenTarget > maxDistance)
+	{
+		return false; // to far
+	}
+	
+	if(isInLine && !isOnSameLine(cellTarget, cellShoot))
+	{
+		return false; // not on same line
+	}
+	
+	if(!passTroughObstacle && !lineOfSight(cellTarget, cellShoot))
+	{
+		return false; // not on sight
+	}
+	
+	return true;
+}
+
+
