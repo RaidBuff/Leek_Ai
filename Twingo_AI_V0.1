@@ -1,0 +1,70 @@
+//--------------------------------
+//------- Main 1.0 -----------
+//--------------------------------
+
+//var whiteList = ["MasterRace", "KumaKami", "juteux", "Kroc", "Cataclysm", "AAAHHH", "unpoireausanspeur", "BorgnCouille"];
+var context = getFightContext();
+global enemy;
+global firstUse = 0;
+var me = getLeek();
+
+if(getWeapon() == null)
+	setWeapon(WEAPON_LASER);
+if (enemy == null || isDead(enemy))
+	enemy = getNearestEnemy();
+	
+var meCell = getCell(me);
+var enemyCell = getCell(enemy);
+
+var cellDistance = getCellDistance(meCell, enemyCell);
+
+if (!canUseWeapon(enemy) && cellDistance <= 7 && cellDistance > 2) {
+	var cellCible = getCellToUseWeapon(WEAPON_BROADSWORD, enemy);
+	moveTowardCell(cellCible);
+}else if(cellDistance >= 7 || cellDistance <= 3){
+	moveToward(enemy);
+}
+
+meCell = getCell(me);
+enemyCell = getCell(enemy);
+
+cellDistance = getCellDistance(meCell, enemyCell);
+
+if (cellDistance<14) 
+{
+	if(firstUse ==0) firstUse=getTurn();
+		useChip(CHIP_SHIELD, me);
+		useChip(CHIP_HELMET, me);
+		if ((getTurn()-firstUse)% 4 == 3) 
+			if (getLife() < 0.80*getTotalLife()) {
+				useChip(CHIP_CURE, me);
+			}
+}
+
+var tp = getTP();
+
+for (var i = 0; i < tp; 1)
+{
+	if(canUseWeapon(WEAPON_BROADSWORD, enemy))
+	{
+		if(getWeapon() != WEAPON_BROADSWORD) { setWeapon(WEAPON_BROADSWORD); }
+		useWeapon(enemy);
+		i += 5;
+	}
+	else if(canUseWeapon(WEAPON_LASER, enemy)) { 
+		if(getWeapon() != WEAPON_LASER) { setWeapon(WEAPON_LASER); }
+		useWeapon(enemy);
+		i += 6;
+	}
+	else if (canUseChip(CHIP_SPARK, enemy)) {
+		useChip(CHIP_SPARK, enemy);
+		i += 3;
+	}
+	else
+		break;
+}
+
+if (canUseChip(CHIP_SPARK, enemy)) useChip(CHIP_SPARK, enemy);
+if (canUseChip(CHIP_SPARK, enemy)) useChip(CHIP_SPARK, enemy);
+if (canUseChip(CHIP_PEBBLE, enemy)) useChip(CHIP_PEBBLE, enemy);
+if (enemy == null || isDead(enemy)) enemy = getNearestEnemy();
