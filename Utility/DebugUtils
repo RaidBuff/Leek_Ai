@@ -1,0 +1,58 @@
+global isDebugEnabled;
+global debugLevel;
+
+function getDebug()
+{
+	if(isDebugEnabled == null)
+	{
+		isDebugEnabled = getRegister("DEBUG");
+		if(isDebugEnabled == null)
+		{
+			isDebugEnabled = true;
+			setRegister("DEBUG", isDebugEnabled);
+		}
+	}
+	return isDebugEnabled;
+}
+
+function getDebugLevel()
+{
+	if(debugLevel == null)
+	{
+		debugLevel = number(getRegister("DEBUG_LEVEL"));
+		if(debugLevel == null)
+		{
+			debugLevel = 0;
+			setRegister("DEBUG_LEVEL", debugLevel);
+		}
+	}
+	return debugLevel;
+}
+
+function write(text, level, color)
+{
+	if(getDebug() && getDebugLevel() <= level)
+	{
+		debugC(text, color);
+	}
+}
+
+function info(text)
+{
+	write(text, 0, 5819918); // green
+}
+
+function warning(text)
+{
+	write(text, 1, 14386961); // orange
+}
+
+function danger(text)
+{
+	write(text, 2, 12518147); // red
+}
+
+function fatal(text)
+{
+	write(text, 3, 0); // black
+}
