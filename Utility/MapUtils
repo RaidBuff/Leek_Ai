@@ -1,0 +1,109 @@
+include("DebugUtils");
+
+// constant
+global TOP_LEFT = 0;
+global TOP_RIGHT = 1;
+global BOT_LEFT = 2;
+global BOT_RIGHT = 3;
+
+global rechedCell = [];
+global obstacles = [];
+
+/**
+ * Initialize of current state of map (no leek inside)
+ */
+if(getTurn() == 1)
+{
+	info("Start generating map...");
+	
+	obstacles = getObstacles();
+	for(var i = 0; i <= 612; i++) // for each celle
+	{
+		// 0:left-top / 1:right-top / 2:left-bot / 3:right-bot
+		rechedCell[i] = @([i - 18, i - 17, i + 17, i + 18]);
+	}
+
+	for(var x = 0; x <= 17; x++) // for line border (top & bot)
+	{
+		rechedCell[x][TOP_LEFT] = null;
+		rechedCell[x][TOP_RIGHT] = null;
+
+		rechedCell[612 - x][BOT_LEFT] = null;
+		rechedCell[612 - x][BOT_RIGHT] = null;
+	}
+
+	for(var y = 0; y <= 595; y = y + 35) // for column bordel (left & right)
+	{
+		rechedCell[y][TOP_LEFT] = null;
+		rechedCell[y][BOT_LEFT] = null;
+
+		rechedCell[17 + y][TOP_RIGHT] = null;
+		rechedCell[17 + y][BOT_RIGHT] = null;
+	}
+
+	var numberOfObstacle = @(count(obstacles));
+	for(var i = 0; i < numberOfObstacle; i++) // add unreachable cell
+	{
+		var cell = @(obstacles[i]); // unreachable cell
+		var recheableCell = @(rechedCell[cell]); // list of reachable cell from unreachable cell
+
+		for(var i2 = 0; i2 < 4; i2++) // [0..3]
+		{
+			var currentCheckCell = @(recheableCell[i2]);
+			rechedCell[currentCheckCell][3 - i2] = null;
+		}
+		rechedCell[cell] = @([null, null, null, null]);
+	}
+
+/*  // use this to display all the tab. WARNING, CAUSE LAG SPIKE !
+	for(var i = 0; i < count(rechedCell); i++)
+	{
+		write("[" + i + "] " + rechedCell[i], 3, 0); // black
+	}
+*/	
+	info("End generating map...");
+}
+
+/**
+ * ReachableCell algorythme.
+ *
+ * @param origine <i>Cell</i> cell origine
+ * @param mpAllowed <i>integer</i> max range allowed
+ * @return <i>array[cell]</i> return array or accesible cell
+ */
+function getReachableCell(@origine, @mpAllowed)
+{
+	var mpLeft = @([]);
+	var retVal = @([]);
+	var currentTab = @([origine]);
+	
+	mpLeft[@origine] = @(mpAllowed);
+	
+	while(!isEmpty(currentTab))
+	{
+		origine = @(shift(currentTab));
+		mpAllowed = mpLeft[@origine] - 1;
+
+		if(mpLeft[origine] != null)
+			push(@retVal, @origine);
+			
+		if(mpAllowed >= 0)
+		{
+			var recheableCell =  @(rechedCell[origine]);
+			for(var y = 0; y < 4; y++) // [0..3]
+			{
+				var currentCell = @(recheableCell[y]);
+				if(currentCell != null)
+				{
+					if(mpLeft[@currentCell] == null || mpLeft[@currentCell] < mpAllowed)
+					{
+						push(@currentTab, @currentCell);
+						mpLeft[@currentCell] = @(mpAllowed);
+					}
+				}
+			} // for each face
+		} // if mpAllowed >= 0
+	} // for each pm allowed
+	
+	return @retVal;
+}
