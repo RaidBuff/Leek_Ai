@@ -1,0 +1,75 @@
+//--------------------------------
+//------- Main 1.0 -----------
+//--------------------------------
+
+//var whiteList = ["MasterRace", "KumaKami", "juteux", "Kroc", "Cataclysm", "AAAHHH", "unpoireausanspeur", "BorgnCouille"];
+//var context = getFightContext();
+global enemy;
+global firstUse = 0;
+var me = getLeek();
+
+if(getWeapon() == null)
+	setWeapon(WEAPON_DOUBLE_GUN);
+if (enemy == null || isDead(enemy))
+	enemy = getNearestEnemy();
+	
+var meCell = getCell(me);
+var enemyCell = getCell(enemy);
+
+var cellDistance = getCellDistance(meCell, enemyCell);
+
+if (!canUseWeapon(enemy) && cellDistance <= 7 && cellDistance > 4) {
+	var cellCible = getCellToUseWeapon(WEAPON_DOUBLE_GUN, enemy);
+	moveTowardCell(cellCible);
+}else if(cellDistance >= 7 || cellDistance < 3){
+	moveToward(enemy);
+}
+else if(cellDistance <= 3){
+	moveAwayFrom(enemy);
+}
+
+meCell = getCell(me);
+enemyCell = getCell(enemy);
+
+cellDistance = getCellDistance(meCell, enemyCell);
+
+/*if (cellDistance<14) 
+{
+	if(firstUse ==0) firstUse=getTurn();
+		useChip(CHIP_SHIELD, me);
+		useChip(CHIP_HELMET, me);
+		useChip(CHIP_WALL, me);
+		if ((getTurn()-firstUse)% 4 == 3) 
+			if (getLife() < 0.80*getTotalLife()) {
+				useChip(CHIP_CURE, me);
+			}
+}*/
+
+var tp = getTP();
+
+for (var i = 0; i < tp; 1)
+{
+	if(cellDistance == 1)
+	{
+		if(getWeapon() != WEAPON_PISTOL) { setWeapon(WEAPON_PISTOL); }
+		useWeapon(enemy);
+		i += 3;
+	}
+	/*else*/ if(canUseWeapon(WEAPON_DOUBLE_GUN, enemy)) { 
+		if(getWeapon() != WEAPON_DOUBLE_GUN) { setWeapon(WEAPON_DOUBLE_GUN); }
+		useWeapon(enemy);
+		i += 4;
+	}
+	else if (canUseChip(CHIP_SPARK, enemy)) {
+		useChip(CHIP_SPARK, enemy);
+		i += 3;
+	}
+	else
+		break;
+}
+
+if (canUseChip(CHIP_SPARK, enemy)) useChip(CHIP_SPARK, enemy);
+/* if (canUseChip(CHIP_SPARK, enemy)) useChip(CHIP_SPARK, enemy);
+if (canUseChip(CHIP_PEBBLE, enemy)) useChip(CHIP_PEBBLE, enemy);
+*/
+if (enemy == null || isDead(enemy)) enemy = getNearestEnemy();
